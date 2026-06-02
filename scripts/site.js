@@ -14,11 +14,6 @@
     return node ? node.textContent.trim() : "";
   }
 
-  function attrFrom(documentLike, selector, attribute) {
-    var node = documentLike.querySelector(selector);
-    return node ? node.getAttribute(attribute) || "" : "";
-  }
-
   function titleFromSlug(slug) {
     return slug
       .split("-")
@@ -27,10 +22,6 @@
         return part.slice(0, 1).toUpperCase() + part.slice(1);
       })
       .join("-");
-  }
-
-  function sameOriginPath(path) {
-    return new URL(path, window.location.href).toString();
   }
 
   function fetchText(url) {
@@ -89,59 +80,97 @@
       });
   }
 
-  function thumbnailFor(slug, doc) {
-    var thumbnail = "projects/" + slug + "/assets/thumbnail.png";
-    var firstImage = attrFrom(doc, "img", "src");
+  function commitUrlFor(slug) {
+    var path = encodeURIComponent("projects/" + slug);
 
-    return {
-      src: sameOriginPath(thumbnail),
-      fallback: firstImage,
-    };
+    return (
+      "https://api.github.com/repos/" +
+      owner +
+      "/" +
+      repo +
+      "/commits?sha=" +
+      branch +
+      "&path=" +
+      path +
+      "&per_page=1"
+    );
+  }
+
+  function readLastCommit(slug) {
+    return fetch(commitUrlFor(slug))
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Unable to load commit metadata");
+        }
+        return response.json();
+      })
+      .then(function (items) {
+        var commit = items && items[0];
+        var date =
+          commit &&
+          commit.commit &&
+          commit.commit.committer &&
+          commit.commit.committer.date;
+
+        return date
+          ? {
+              date: date,
+              sha: commit.sha || "",
+            }
+          : null;
+      })
+      .catch(function () {
+        return null;
+      });
+  }
+
+  function formatCommitDate(value) {
+    if (!value) {
+      return "정보 없음";
+    }
+
+    return new Intl.DateTimeFormat("ko-KR", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      timeZone: "Asia/Seoul",
+      timeZoneName: "short",
+    }).format(new Date(value));
   }
 
   function readProject(slug) {
     var path = "projects/" + slug + "/";
 
-    return fetchText(path + "index.html")
-      .then(function (html) {
+    return Promise.all([fetchText(path + "index.html"), readLastCommit(slug)])
+      .then(function (results) {
+        var html = results[0];
+        var lastCommit = results[1];
         var parser = new DOMParser();
         var doc = parser.parseFromString(html, "text/html");
         var title = textFrom(doc, "h1") || textFrom(doc, "title") || titleFromSlug(slug);
-        var description = attrFrom(doc, "meta[name='description']", "content") || textFrom(doc, ".subtitle") || "";
-        var thumbnail = thumbnailFor(slug, doc);
 
         return {
           slug: slug,
           title: title,
-          description: description,
           href: path,
-          thumbnail: thumbnail,
+          lastCommit: lastCommit,
         };
       });
   }
 
   function createCard(project) {
     var article = document.createElement("article");
-    var image = document.createElement("img");
     var topline = document.createElement("div");
     var statusLabel = document.createElement("span");
     var slugLabel = document.createElement("span");
     var title = document.createElement("h3");
-    var description = document.createElement("p");
+    var commitMeta = document.createElement("p");
+    var commitTime = document.createElement("time");
     var link = document.createElement("a");
 
     article.className = "report-card";
-
-    image.src = project.thumbnail.src;
-    image.alt = project.title + " preview";
-    image.loading = "lazy";
-    image.onerror = function () {
-      if (project.thumbnail.fallback && image.src !== project.thumbnail.fallback) {
-        image.src = project.thumbnail.fallback;
-      } else {
-        image.remove();
-      }
-    };
 
     topline.className = "card-topline";
     statusLabel.className = "status status-complete";
@@ -149,20 +178,20 @@
     slugLabel.textContent = project.slug.toUpperCase();
 
     title.textContent = project.title;
-    description.textContent = project.description;
+    commitMeta.className = "commit-meta";
+    commitTime.textContent = formatCommitDate(project.lastCommit && project.lastCommit.date);
+
+    if (project.lastCommit && project.lastCommit.date) {
+      commitTime.dateTime = project.lastCommit.date;
+    }
 
     link.className = "card-link";
     link.href = project.href;
     link.textContent = "보고서 열기";
 
+    commitMeta.append("마지막 커밋 ", commitTime);
     topline.append(statusLabel, slugLabel);
-    article.append(image, topline, title);
-
-    if (project.description) {
-      article.append(description);
-    }
-
-    article.append(link);
+    article.append(topline, title, commitMeta, link);
 
     return article;
   }

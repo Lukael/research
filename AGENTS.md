@@ -13,7 +13,9 @@ This repository is a static research report archive released from `main`.
 The main index reads project metadata from each project `index.html`:
 
 - `<title>` or the first `<h1>` for the display title.
-- `<meta name="description">` for the card description when present.
+- Last commit date/time from the GitHub commits API for `projects/<slug>/`.
+
+The main index should not show project thumbnails or report summaries. Keep project cards focused on title, slug, publication state, last commit date/time, and the report link.
 
 Do not rely on project `assets/` files for report content or thumbnails. Project images should be base64-encoded and embedded into the report HTML before encryption so they are protected inside `report.enc`.
 
@@ -72,7 +74,8 @@ For small site changes, use targeted checks:
 
 - `node --check scripts/decrypt-report.js`
 - Static serving with `python3 -m http.server <port>`
-- `curl -I` checks for root index, project index, scripts, thumbnails, and encrypted payloads.
+- `curl -I` checks for root index, project index, scripts, and encrypted payloads.
+- Confirm the root index does not render thumbnails or report summaries, and does render project last commit date/time when the GitHub commits API is reachable.
 - For encrypted reports, verify Web Crypto decrypt using `REPORT_PASSWORD` without printing the secret.
 
 When changing frontend behavior, prefer a browser or Playwright smoke test if available.
