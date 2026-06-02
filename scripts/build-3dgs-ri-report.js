@@ -13,6 +13,15 @@ const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), `${projectSlug}-report-`))
 const tmpHtml = path.join(tmpRoot, `${projectSlug}-report.html`);
 const reportMd = path.join(sourceRoot, 'REPORT_ko.md');
 const reportEnc = path.join(projectRoot, 'report.enc');
+const embeddedAssetCache = new Map();
+const imageMimes = new Map([
+  ['.png', 'image/png'],
+  ['.jpg', 'image/jpeg'],
+  ['.jpeg', 'image/jpeg'],
+  ['.gif', 'image/gif'],
+  ['.webp', 'image/webp'],
+  ['.svg', 'image/svg+xml'],
+]);
 
 function fail(message) {
   console.error(message);
@@ -47,8 +56,19 @@ function inlineMarkdown(value) {
 
 function rewriteAsset(src) {
   if (/^(https?:|data:|#)/.test(src)) return src;
-  if (src.startsWith('outputs/')) return `assets/${src}`;
-  return src;
+  const withoutFragment = src.split('#')[0].split('?')[0];
+  const ext = path.extname(withoutFragment).toLowerCase();
+  const mime = imageMimes.get(ext);
+  if (!mime) return src;
+
+  const filePath = path.resolve(sourceRoot, withoutFragment);
+  const sourceBoundary = `${path.resolve(sourceRoot)}${path.sep}`;
+  if (!filePath.startsWith(sourceBoundary)) fail(`Refusing to embed image outside source root: ${src}`);
+  if (!fs.existsSync(filePath)) fail(`Missing report image: ${filePath}`);
+  if (!embeddedAssetCache.has(filePath)) {
+    embeddedAssetCache.set(filePath, `data:${mime};base64,${fs.readFileSync(filePath).toString('base64')}`);
+  }
+  return embeddedAssetCache.get(filePath);
 }
 
 function renderTable(rows) {
@@ -192,33 +212,6 @@ function renderMarkdown(markdown) {
   return { body: html.join('\n'), headings };
 }
 
-const excludedAssetExtensions = new Set(['.pt', '.pth', '.ckpt']);
-
-function copyRecursive(src, dest) {
-  if (!fs.existsSync(src)) return;
-  const stat = fs.statSync(src);
-  if (stat.isDirectory()) {
-    fs.mkdirSync(dest, { recursive: true });
-    for (const entry of fs.readdirSync(src)) {
-      copyRecursive(path.join(src, entry), path.join(dest, entry));
-    }
-  } else {
-    if (excludedAssetExtensions.has(path.extname(src).toLowerCase())) return;
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.copyFileSync(src, dest);
-  }
-}
-
-function createThumbnail() {
-  const candidates = [
-    path.join(assetsRoot, 'outputs/report_reference_compare/reference_compare_overview.png'),
-    path.join(assetsRoot, 'outputs/report_splat_to_ri/splat_to_ri_pipeline_overview.png'),
-    path.join(assetsRoot, 'outputs/report_multiview/multiview_pipeline_overview.png'),
-  ];
-  const source = candidates.find((p) => fs.existsSync(p));
-  if (source) fs.copyFileSync(source, path.join(assetsRoot, 'thumbnail.png'));
-}
-
 function reportShell() {
   return `<!doctype html>
 <html lang="ko">
@@ -286,14 +279,8 @@ function buildReportHtml(markdown) {
 
 if (!fs.existsSync(reportMd)) fail(`Missing report source: ${reportMd}`);
 fs.mkdirSync(projectRoot, { recursive: true });
-fs.mkdirSync(assetsRoot, { recursive: true });
 fs.mkdirSync(tmpRoot, { recursive: true });
-fs.rmSync(path.join(assetsRoot, 'outputs'), { recursive: true, force: true });
-
-for (const name of ['report_samples', 'report_multiview', 'report_splat_to_ri', 'report_reference_compare']) {
-  copyRecursive(path.join(sourceRoot, 'outputs', name), path.join(assetsRoot, 'outputs', name));
-}
-createThumbnail();
+fs.rmSync(assetsRoot, { recursive: true, force: true });
 fs.writeFileSync(path.join(projectRoot, 'index.html'), reportShell());
 fs.writeFileSync(tmpHtml, buildReportHtml(fs.readFileSync(reportMd, 'utf8')));
 
