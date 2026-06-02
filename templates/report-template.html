@@ -7,11 +7,12 @@
   <style>
     :root {
       color-scheme: dark;
-      --ink: #eef2ea;
-      --muted: #a2ac9f;
-      --paper: #11130f;
-      --panel: #191c16;
-      --line: #31382f;
+      --bg: #11130f;
+      --panel: #181b15;
+      --panel-strong: #20251c;
+      --ink: #f1f4e8;
+      --muted: #adb6a1;
+      --line: rgba(241, 244, 232, 0.14);
       --accent: #5fd1bf;
       --warm: #e0a15f;
       --code: #222821;
@@ -28,7 +29,9 @@
 
     body {
       margin: 0;
-      background: var(--paper);
+      background:
+        radial-gradient(circle at 15% -5%, rgba(95, 209, 191, 0.18), transparent 28%),
+        linear-gradient(180deg, #11130f, #0d0f0c 55%, #11130f);
       color: var(--ink);
       font-size: 16px;
       line-height: 1.68;
@@ -40,26 +43,24 @@
       text-underline-offset: 0.18em;
     }
 
-    header {
-      min-height: 82vh;
+    .hero {
+      min-height: 78vh;
       display: grid;
-      align-items: end;
+      align-content: end;
       padding: 56px max(24px, calc((100vw - 1120px) / 2)) 48px;
       border-bottom: 1px solid var(--line);
       background:
-        linear-gradient(rgba(17, 19, 15, 0.78), rgba(17, 19, 15, 0.98)),
+        linear-gradient(rgba(17, 19, 15, 0.74), rgba(17, 19, 15, 0.98)),
         var(--hero-image) center / cover no-repeat,
-        var(--paper);
-    }
-
-    .hero {
-      max-width: 920px;
+        radial-gradient(circle at 18% 14%, rgba(95, 209, 191, 0.16), transparent 32%),
+        radial-gradient(circle at 82% 24%, rgba(224, 161, 95, 0.13), transparent 34%),
+        var(--bg);
     }
 
     .kicker {
       margin: 0 0 14px;
       color: var(--warm);
-      font-weight: 760;
+      font-weight: 800;
     }
 
     h1,
@@ -73,16 +74,16 @@
 
     h1 {
       margin: 0;
-      max-width: 900px;
-      font-size: 5rem;
+      max-width: 920px;
+      font-size: 4.7rem;
       line-height: 0.98;
     }
 
-    .subtitle {
+    .hero-summary {
       max-width: 760px;
       margin: 24px 0 0;
       color: #d2d9cf;
-      font-size: 1.18rem;
+      font-size: 1.14rem;
     }
 
     .meta-grid {
@@ -106,36 +107,51 @@
       font-size: 1.04rem;
     }
 
-    main {
-      padding: 0 max(20px, calc((100vw - 1120px) / 2)) 72px;
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 34px;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 42px 24px 90px;
     }
 
     nav.toc {
       position: sticky;
-      top: 0;
+      top: 18px;
       z-index: 10;
-      margin: 0 calc(-1 * max(20px, calc((100vw - 1120px) / 2)));
-      padding: 12px max(20px, calc((100vw - 1120px) / 2));
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      background: rgba(17, 19, 15, 0.92);
-      border-bottom: 1px solid var(--line);
+      align-self: start;
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(24, 28, 22, 0.72);
+      padding: 18px;
       backdrop-filter: blur(10px);
     }
 
+    nav.toc strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--warm);
+    }
+
     nav.toc a {
-      flex: 0 0 auto;
-      color: var(--ink);
+      display: block;
+      color: var(--muted);
       text-decoration: none;
-      font-weight: 700;
+      font-weight: 760;
       font-size: 0.92rem;
-      padding: 6px 0;
-      border-bottom: 2px solid transparent;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(238, 242, 234, 0.06);
     }
 
     nav.toc a:hover {
-      border-bottom-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .content {
+      min-width: 0;
     }
 
     .report-section {
@@ -144,7 +160,7 @@
 
     h2 {
       margin: 62px 0 22px;
-      font-size: 2.1rem;
+      font-size: 2.05rem;
       border-top: 1px solid var(--line);
       padding-top: 28px;
     }
@@ -252,8 +268,17 @@
     }
 
     @media (max-width: 720px) {
-      header {
-        min-height: 78vh;
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      nav.toc {
+        position: static;
+        max-height: none;
+      }
+
+      .hero {
+        min-height: 72vh;
         padding-top: 34px;
       }
 
@@ -261,7 +286,7 @@
         font-size: 3rem;
       }
 
-      .subtitle {
+      .hero-summary {
         font-size: 1rem;
       }
 
@@ -272,21 +297,20 @@
   </style>
 </head>
 <body data-hero-mime="{{HERO_IMAGE_MIME}}" data-hero-base64="{{HERO_IMAGE_BASE64}}">
-  <header>
-    <div class="hero">
-      <p class="kicker">{{PROJECT_SLUG_OR_LABEL}}</p>
-      <h1>{{PROJECT_TITLE}}</h1>
-      <p class="subtitle">{{ONE_SENTENCE_SCOPE}}</p>
-      <div class="meta-grid" aria-label="Report metadata">
-        <div class="meta-item"><strong>{{REPORT_DATE}}</strong>Date</div>
-        <div class="meta-item"><strong>{{METHOD_OR_SYSTEM}}</strong>Method</div>
-        <div class="meta-item"><strong>{{PRIMARY_METRIC}}</strong>Primary Metric</div>
-      </div>
+  <header class="hero">
+    <p class="kicker">{{PROJECT_LABEL}}</p>
+    <h1>{{PROJECT_TITLE}}</h1>
+    <p class="hero-summary">{{ONE_SENTENCE_SCOPE}}</p>
+    <div class="meta-grid" aria-label="Report metadata">
+      <div class="meta-item"><strong>{{REPORT_DATE}}</strong>Date</div>
+      <div class="meta-item"><strong>{{METHOD_OR_SYSTEM}}</strong>Method</div>
+      <div class="meta-item"><strong>{{PRIMARY_METRIC}}</strong>Primary Metric</div>
     </div>
   </header>
 
-  <main>
+  <div class="layout">
     <nav class="toc" aria-label="Table of contents">
+      <strong>Contents</strong>
       <a href="#overview">Overview</a>
       <a href="#method">Method</a>
       <a href="#results">Results</a>
@@ -294,6 +318,7 @@
       <a href="#next-steps">Next Steps</a>
     </nav>
 
+    <main class="content">
     <section class="report-section" id="overview">
       <h2>Overview</h2>
       <p>{{SUMMARY_PARAGRAPH}}</p>
@@ -350,7 +375,8 @@
         <li>{{NEXT_STEP_3}}</li>
       </ol>
     </section>
-  </main>
+    </main>
+  </div>
 
   <footer>{{FOOTER_NOTE}}</footer>
   <script>

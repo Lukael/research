@@ -19,6 +19,8 @@ The main index should be written mostly in English. Project cards should not sho
 
 Do not rely on project `assets/` files for report content or thumbnails. Project images should be base64-encoded and embedded into the report HTML before encryption so they are protected inside `report.enc`. Prefer raw base64 fields that the template converts to Blob URLs, rather than public asset references.
 
+Use `projects/3dgs-ri/` as the baseline report layout: dark hero, left sticky contents rail, and right-side report content. `templates/report-template.html` is the repo-level starting point for new plaintext report bodies and should keep that 3dgs-ri-derived dark structure.
+
 For GitHub-hosted browsing, `scripts/site.js` uses the GitHub Contents API for `Lukael/research` on `main`. For local static serving, it falls back to parsing the directory listing under `projects/`.
 
 ## Adding Projects
@@ -27,7 +29,7 @@ To add a new report project:
 
 1. Create `projects/<slug>/index.html` as a public unlock shell.
 2. Keep `projects/<slug>/assets/` empty or absent.
-3. Start the plaintext report body from `templates/report-template.html`.
+3. Start the plaintext report body from `templates/report-template.html`; it is based on the `3dgs-ri` dark two-column report layout.
 4. Base64-encode report images and embed the encoded image data into the plaintext report HTML.
 5. Keep plaintext templates outside `projects/` so the root index never discovers them.
 6. Store the encrypted report payload as `projects/<slug>/report.enc`.
@@ -44,6 +46,7 @@ All project reports in this repository should be protected with client-side encr
 - `projects/<slug>/report.enc` should be the encrypted report payload.
 - Report images, figures, plots, and other media should be base64-encoded and embedded inside the report HTML before encryption, not placed in public project assets.
 - `templates/report-template.html` demonstrates the preferred raw base64 image fields and client-side Blob URL conversion; do not make public project images depend on `data:image` URLs or asset files.
+- New and updated reports should follow the 3dgs-ri-derived dark layout unless a project has an explicit reason to diverge.
 - New project `assets/` directories should remain empty or be omitted.
 - `scripts/decrypt-report.js` handles password-based decrypt and renders the report in an iframe.
 
@@ -80,7 +83,7 @@ For small site changes, use targeted checks:
 - Static serving with `python3 -m http.server <port>`
 - `curl -I` checks for root index, project index, scripts, and encrypted payloads.
 - Confirm the root index does not render thumbnails or report summaries, and does render project last commit date/time when the GitHub commits API is reachable.
-- For encrypted reports, verify Web Crypto decrypt using `REPORT_PASSWORD` without printing the secret.
+- For encrypted reports, verify Web Crypto decrypt using `REPORT_PASSWORD` without printing the secret. When touching a report payload, also confirm it has the 3dgs-ri-derived dark layout, contains no `data:image` strings, and stores report images as raw base64 attributes inside the encrypted HTML.
 
 When changing frontend behavior, prefer a browser or Playwright smoke test if available.
 
