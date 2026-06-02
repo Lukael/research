@@ -56,11 +56,59 @@
     });
   }
 
+  function getHashTarget(documentRef, hash) {
+    var id = hash.slice(1);
+    var decodedId = id;
+
+    try {
+      decodedId = decodeURIComponent(id);
+    } catch (error) {
+      decodedId = id;
+    }
+
+    return (
+      documentRef.getElementById(decodedId) ||
+      documentRef.getElementById(id) ||
+      documentRef.getElementsByName(decodedId)[0] ||
+      documentRef.getElementsByName(id)[0]
+    );
+  }
+
+  function installAnchorScrolling(iframe) {
+    var documentRef = iframe.contentDocument;
+
+    if (!documentRef) {
+      return;
+    }
+
+    documentRef.addEventListener("click", function (event) {
+      var target = event.target;
+      var link = target && target.closest ? target.closest("a[href]") : null;
+      var href = link ? link.getAttribute("href") : "";
+
+      if (!href || href.charAt(0) !== "#") {
+        return;
+      }
+
+      var anchorTarget = getHashTarget(documentRef, href);
+
+      if (!anchorTarget) {
+        return;
+      }
+
+      event.preventDefault();
+      anchorTarget.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
   function showReport(html) {
     var iframe = document.createElement("iframe");
 
     iframe.className = "report-frame";
     iframe.title = document.title;
+    iframe.addEventListener("load", function () {
+      installAnchorScrolling(iframe);
+    });
     iframe.srcdoc = html;
     document.body.classList.add("is-unlocked");
     document.body.appendChild(iframe);
