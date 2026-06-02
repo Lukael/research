@@ -14,7 +14,8 @@ The main index reads project metadata from each project `index.html`:
 
 - `<title>` or the first `<h1>` for the display title.
 - `<meta name="description">` for the card description when present.
-Do not rely on project `assets/` files for report content or thumbnails. Project images should be embedded into the report HTML before encryption so they are protected inside `report.enc`.
+
+Do not rely on project `assets/` files for report content or thumbnails. Project images should be base64-encoded and embedded into the report HTML before encryption so they are protected inside `report.enc`.
 
 For GitHub-hosted browsing, `scripts/site.js` uses the GitHub Contents API for `Lukael/research` on `main`. For local static serving, it falls back to parsing the directory listing under `projects/`.
 
@@ -24,7 +25,7 @@ To add a new report project:
 
 1. Create `projects/<slug>/index.html` as a public unlock shell.
 2. Keep `projects/<slug>/assets/` empty or absent.
-3. Embed report images into the plaintext report HTML, then encrypt that HTML into `projects/<slug>/report.enc`.
+3. Base64-encode report images and embed the encoded image data into the plaintext report HTML.
 4. Store the encrypted report payload as `projects/<slug>/report.enc`.
 5. Serve the repo statically and verify the root index discovers the project automatically.
 
@@ -36,7 +37,7 @@ All project reports in this repository should be protected with client-side encr
 
 - `projects/<slug>/index.html` should be only the unlock shell.
 - `projects/<slug>/report.enc` should be the encrypted report payload.
-- Report images, figures, plots, and other media should be embedded inside the report HTML before encryption, not placed in public project assets.
+- Report images, figures, plots, and other media should be base64-encoded and embedded inside the report HTML before encryption, not placed in public project assets.
 - New project `assets/` directories should remain empty or be omitted.
 - `scripts/decrypt-report.js` handles password-based decrypt and renders the report in an iframe.
 
