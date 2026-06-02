@@ -6,6 +6,7 @@
   <title>Lukael Research Reports</title>
   <meta name="description" content="Research notes and project reports.">
   <link rel="stylesheet" href="styles/site.css">
+  <script src="scripts/site.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -24,17 +25,8 @@
       </div>
     </section>
 
-    <section class="report-grid" aria-label="Project report list">
-      <article class="report-card">
-        <img src="projects/fm-fpm/assets/thumbnail.png" alt="FM-FPM complex object construction preview" loading="lazy">
-        <div class="card-topline">
-          <span class="status status-complete">Published</span>
-          <span>FM-FPM</span>
-        </div>
-        <h3>FM-FPM 검증 보고서</h3>
-        <p>Frequency-coded event-camera Fourier ptychographic microscopy의 Milestone 1-6 검증과 관련 연구 조사 요약.</p>
-        <a class="card-link" href="projects/fm-fpm/">보고서 열기</a>
-      </article>
+    <section class="report-grid" id="report-grid" aria-label="Project report list">
+      <p class="empty-state" id="report-status">보고서를 불러오는 중입니다.</p>
     </section>
   </main>
 
