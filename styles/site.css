@@ -78,32 +78,6 @@ h1 {
   font-size: 1.18rem;
 }
 
-.release-strip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  max-width: 880px;
-  margin-top: 34px;
-}
-
-.release-strip div {
-  border-top: 2px solid var(--accent);
-  padding-top: 10px;
-}
-
-.release-strip strong,
-.release-strip span {
-  display: block;
-}
-
-.release-strip strong {
-  color: var(--ink);
-}
-
-.release-strip span {
-  color: var(--muted);
-}
-
 main {
   max-width: 1120px;
   margin: 0 auto;
@@ -116,11 +90,6 @@ main {
   gap: 28px;
   align-items: end;
   margin-bottom: 20px;
-}
-
-.section-header.compact {
-  display: block;
-  margin-top: 52px;
 }
 
 .section-header h2 {
@@ -189,55 +158,11 @@ main {
   color: #314139;
 }
 
-dl {
-  display: grid;
-  gap: 8px;
-  margin: 4px 0 0;
-}
-
-dl div {
-  display: grid;
-  grid-template-columns: 78px minmax(0, 1fr);
-  gap: 12px;
-}
-
-dt {
-  color: var(--muted);
-  font-weight: 760;
-}
-
-dd {
-  margin: 0;
-}
-
 .card-link {
   align-self: end;
   justify-self: start;
   color: var(--accent-strong);
   font-weight: 800;
-}
-
-.layout-list {
-  display: grid;
-  gap: 10px;
-  border-top: 1px solid var(--line);
-}
-
-.layout-list div {
-  display: grid;
-  grid-template-columns: minmax(210px, 320px) minmax(0, 1fr);
-  gap: 18px;
-  padding: 15px 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.layout-list strong {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 0.92rem;
-}
-
-.layout-list span {
-  color: var(--muted);
 }
 
 footer {
@@ -260,9 +185,7 @@ footer {
     font-size: 1rem;
   }
 
-  .release-strip,
-  .section-header,
-  .layout-list div {
+  .section-header {
     grid-template-columns: 1fr;
   }
 }

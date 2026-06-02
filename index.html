@@ -4,39 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lukael Research Reports</title>
-  <meta name="description" content="Public research report index for projects released from Lukael/research main.">
+  <meta name="description" content="Research notes and project reports.">
   <link rel="stylesheet" href="styles/site.css">
 </head>
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <p class="kicker">Lukael/research main release</p>
+      <p class="kicker">Lukael Research</p>
       <h1>Research Reports</h1>
-      <p class="intro">프로젝트별 검증 보고서, 실험 결과, 관련 연구 요약을 공개 가능한 정적 페이지로 정리합니다.</p>
-      <div class="release-strip" aria-label="Release summary">
-        <div>
-          <strong>Release branch</strong>
-          <span>main</span>
-        </div>
-        <div>
-          <strong>Format</strong>
-          <span>Static HTML</span>
-        </div>
-        <div>
-          <strong>Policy</strong>
-          <span>Published reports only</span>
-        </div>
-      </div>
+      <p class="intro">실험과 보고서를 모아둔 리서치 아카이브입니다.</p>
     </div>
   </header>
 
   <main>
     <section class="section-header" aria-labelledby="active-projects">
       <div>
-        <p class="eyebrow">Active archive</p>
+        <p class="eyebrow">Archive</p>
         <h2 id="active-projects">Project Reports</h2>
       </div>
-      <p>각 프로젝트는 독립된 하위 경로를 갖고, 루트 페이지는 공개 릴리스의 색인 역할만 합니다.</p>
     </section>
 
     <section class="report-grid" aria-label="Project report list">
@@ -48,49 +33,13 @@
         </div>
         <h3>FM-FPM 검증 보고서</h3>
         <p>Frequency-coded event-camera Fourier ptychographic microscopy의 Milestone 1-6 검증과 관련 연구 조사 요약.</p>
-        <dl>
-          <div>
-            <dt>Scope</dt>
-            <dd>Milestones 1-6</dd>
-          </div>
-          <div>
-            <dt>Output</dt>
-            <dd>Single self-contained report</dd>
-          </div>
-        </dl>
         <a class="card-link" href="projects/fm-fpm/">보고서 열기</a>
       </article>
-    </section>
-
-    <section class="section-header compact" aria-labelledby="release-structure">
-      <div>
-        <p class="eyebrow">Repository structure</p>
-        <h2 id="release-structure">Release Layout</h2>
-      </div>
-    </section>
-
-    <section class="layout-list" aria-label="Release layout">
-      <div>
-        <strong>/index.html</strong>
-        <span>공개 보고서 목록과 repo-level release 안내.</span>
-      </div>
-      <div>
-        <strong>/projects/&lt;project&gt;/index.html</strong>
-        <span>프로젝트별 독립 보고서.</span>
-      </div>
-      <div>
-        <strong>/projects/&lt;project&gt;/assets/</strong>
-        <span>다음 보고서부터 이미지와 실험 산출물을 분리 보관.</span>
-      </div>
-      <div>
-        <strong>/styles/site.css</strong>
-        <span>메인 포털용 공통 스타일.</span>
-      </div>
     </section>
   </main>
 
   <footer>
-    <span>Generated for static publication from the main branch.</span>
+    <span>Lukael Research Reports</span>
   </footer>
 </body>
 </html>
