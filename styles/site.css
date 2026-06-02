@@ -1,13 +1,21 @@
 :root {
   color-scheme: dark;
-  --ink: #eef2ea;
-  --muted: #a2ac9f;
-  --paper: #11130f;
-  --panel: #191c16;
-  --line: #31382f;
-  --accent: #5fd1bf;
-  --accent-strong: #8fe5d7;
-  --warm: #e0a15f;
+  --bg: #1e1e1e;
+  --panel: #252526;
+  --panel-strong: #2d2d30;
+  --surface: #1f1f1f;
+  --input: #3c3c3c;
+  --line: #3c3c3c;
+  --ink: #d4d4d4;
+  --muted: #858585;
+  --accent: #007acc;
+  --accent-strong: #569cd6;
+  --button: #0e639c;
+  --button-hover: #1177bb;
+  --selection: #264f78;
+  --warning: #cca700;
+  --danger: #f44747;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 * {
@@ -20,15 +28,14 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--bg);
   color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
   line-height: 1.62;
 }
 
 a {
-  color: var(--accent);
+  color: var(--accent-strong);
   text-decoration-thickness: 0.08em;
   text-underline-offset: 0.18em;
 }
@@ -36,13 +43,12 @@ a {
 .site-header {
   border-bottom: 1px solid var(--line);
   background:
-    linear-gradient(rgba(17, 19, 15, 0.88), rgba(17, 19, 15, 0.98)),
-    linear-gradient(135deg, rgba(95, 209, 191, 0.12), rgba(224, 161, 95, 0.1) 48%, transparent 74%),
-    var(--paper);
+    linear-gradient(180deg, rgba(37, 37, 38, 0.96), rgba(30, 30, 30, 0.98)),
+    var(--bg);
 }
 
 .header-inner {
-  min-height: 78vh;
+  min-height: 76vh;
   display: grid;
   align-content: end;
   max-width: 1120px;
@@ -53,7 +59,7 @@ a {
 .kicker,
 .eyebrow {
   margin: 0 0 12px;
-  color: var(--warm);
+  color: var(--accent-strong);
   font-weight: 760;
 }
 
@@ -73,7 +79,7 @@ h1 {
 .intro {
   max-width: 760px;
   margin: 22px 0 0;
-  color: #d2d9cf;
+  color: var(--muted);
   font-size: 1.18rem;
 }
 
@@ -117,6 +123,10 @@ main {
   padding: 22px;
 }
 
+.report-card:hover {
+  border-color: var(--accent);
+}
+
 .card-topline {
   display: flex;
   justify-content: space-between;
@@ -146,7 +156,7 @@ main {
 
 .commit-meta {
   margin: 0;
-  color: #d2d9cf;
+  color: var(--muted);
 }
 
 .commit-meta time {
@@ -172,6 +182,7 @@ footer {
   border-top: 1px solid var(--line);
   padding: 26px max(24px, calc((100vw - 1120px) / 2));
   color: var(--muted);
+  background: var(--surface);
 }
 
 @media (max-width: 720px) {

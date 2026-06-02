@@ -7,15 +7,23 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #11130f;
-      --panel: #181b15;
-      --panel-strong: #20251c;
-      --ink: #f1f4e8;
-      --muted: #adb6a1;
-      --line: rgba(241, 244, 232, 0.14);
-      --accent: #5fd1bf;
-      --warm: #e0a15f;
-      --code: #222821;
+      --bg: #1e1e1e;
+      --panel: #252526;
+      --panel-strong: #2d2d30;
+      --surface: #1f1f1f;
+      --input: #3c3c3c;
+      --line: #3c3c3c;
+      --ink: #d4d4d4;
+      --muted: #858585;
+      --accent: #007acc;
+      --accent-strong: #569cd6;
+      --button: #0e639c;
+      --button-hover: #1177bb;
+      --selection: #264f78;
+      --warning: #cca700;
+      --danger: #f44747;
+      --code: #1b1b1b;
+      --code-accent: #ce9178;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -29,37 +37,33 @@
 
     body {
       margin: 0;
-      background:
-        radial-gradient(circle at 15% -5%, rgba(95, 209, 191, 0.18), transparent 28%),
-        linear-gradient(180deg, #11130f, #0d0f0c 55%, #11130f);
+      background: var(--bg);
       color: var(--ink);
       font-size: 16px;
       line-height: 1.68;
     }
 
     a {
-      color: var(--accent);
+      color: var(--accent-strong);
       text-decoration-thickness: 0.08em;
       text-underline-offset: 0.18em;
     }
 
     .hero {
-      min-height: 78vh;
+      min-height: 76vh;
       display: grid;
       align-content: end;
-      padding: 56px max(24px, calc((100vw - 1120px) / 2)) 48px;
+      padding: 60px max(24px, calc((100vw - 1180px) / 2)) 54px;
       border-bottom: 1px solid var(--line);
       background:
-        linear-gradient(rgba(17, 19, 15, 0.74), rgba(17, 19, 15, 0.98)),
+        linear-gradient(rgba(30, 30, 30, 0.78), rgba(30, 30, 30, 0.98)),
         var(--hero-image) center / cover no-repeat,
-        radial-gradient(circle at 18% 14%, rgba(95, 209, 191, 0.16), transparent 32%),
-        radial-gradient(circle at 82% 24%, rgba(224, 161, 95, 0.13), transparent 34%),
-        var(--bg);
+        var(--panel);
     }
 
     .kicker {
       margin: 0 0 14px;
-      color: var(--warm);
+      color: var(--accent-strong);
       font-weight: 800;
     }
 
@@ -74,15 +78,15 @@
 
     h1 {
       margin: 0;
-      max-width: 920px;
-      font-size: 4.7rem;
+      max-width: 980px;
+      font-size: clamp(3rem, 7vw, 6rem);
       line-height: 0.98;
     }
 
     .hero-summary {
-      max-width: 760px;
+      max-width: 780px;
       margin: 24px 0 0;
-      color: #d2d9cf;
+      color: var(--muted);
       font-size: 1.14rem;
     }
 
@@ -124,30 +128,38 @@
       max-height: calc(100vh - 36px);
       overflow: auto;
       border: 1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(24, 28, 22, 0.72);
+      border-radius: 8px;
+      background: var(--panel);
       padding: 18px;
-      backdrop-filter: blur(10px);
     }
 
     nav.toc strong {
       display: block;
       margin-bottom: 10px;
-      color: var(--warm);
+      color: var(--accent-strong);
     }
 
     nav.toc a {
       display: block;
       color: var(--muted);
       text-decoration: none;
-      font-weight: 760;
+      font-weight: 700;
       font-size: 0.92rem;
       padding: 7px 0;
-      border-bottom: 1px solid rgba(238, 242, 234, 0.06);
+      border-bottom: 1px solid rgba(212, 212, 212, 0.08);
     }
 
     nav.toc a:hover {
-      color: var(--accent);
+      color: var(--accent-strong);
+    }
+
+    .toc-level-2 {
+      padding-left: 8px !important;
+    }
+
+    .toc-level-3 {
+      padding-left: 18px !important;
+      font-size: 0.86rem !important;
     }
 
     .content {
@@ -156,6 +168,10 @@
 
     .report-section {
       padding-top: 42px;
+    }
+
+    .content h1 {
+      font-size: 2.4rem;
     }
 
     h2 {
@@ -167,13 +183,25 @@
 
     h3 {
       margin: 40px 0 14px;
+      color: var(--accent-strong);
       font-size: 1.45rem;
     }
 
     h4 {
       margin: 28px 0 10px;
+      color: var(--code-accent);
       font-size: 1.08rem;
-      color: var(--warm);
+    }
+
+    .anchor {
+      opacity: 0.28;
+      margin-left: 0.4em;
+      text-decoration: none;
+    }
+
+    .content h2:hover .anchor,
+    .content h3:hover .anchor {
+      opacity: 0.8;
     }
 
     p,
@@ -186,32 +214,42 @@
       max-width: 920px;
     }
 
+    p,
+    li {
+      color: var(--ink);
+    }
+
     blockquote {
       margin: 24px 0;
       padding: 14px 18px;
-      border-left: 4px solid var(--warm);
-      background: #241f18;
-      color: #ead8bd;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      background: var(--panel);
+      color: var(--ink);
     }
 
     code {
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-      background: var(--code);
-      padding: 0.08rem 0.28rem;
+      border: 1px solid rgba(212, 212, 212, 0.12);
       border-radius: 4px;
+      background: var(--code);
+      color: var(--code-accent);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
       font-size: 0.92em;
+      padding: 0.08rem 0.28rem;
     }
 
     pre {
       overflow-x: auto;
-      background: #111916;
-      color: #ecf5ef;
+      border: 1px solid var(--line);
       border-radius: 8px;
+      background: var(--code);
+      color: var(--ink);
       padding: 18px;
       line-height: 1.55;
     }
 
     pre code {
+      border: 0;
       background: transparent;
       color: inherit;
       padding: 0;
@@ -221,6 +259,7 @@
       overflow-x: auto;
       margin: 24px 0;
       border: 1px solid var(--line);
+      border-radius: 8px;
       background: var(--panel);
     }
 
@@ -239,7 +278,8 @@
     }
 
     th {
-      background: var(--code);
+      background: var(--panel-strong);
+      color: var(--accent-strong);
       font-weight: 800;
     }
 
@@ -247,12 +287,23 @@
       margin: 30px 0 38px;
     }
 
-    img {
+    img,
+    p > img,
+    td img,
+    th img {
       display: block;
       width: 100%;
+      max-width: 100%;
       height: auto;
+      margin: 18px auto;
       border: 1px solid var(--line);
-      background: #fff;
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    td img,
+    th img {
+      max-width: 360px;
     }
 
     figcaption {
@@ -265,9 +316,10 @@
       border-top: 1px solid var(--line);
       padding: 28px max(20px, calc((100vw - 1120px) / 2));
       color: var(--muted);
+      background: var(--surface);
     }
 
-    @media (max-width: 720px) {
+    @media (max-width: 900px) {
       .layout {
         grid-template-columns: 1fr;
       }
@@ -278,7 +330,7 @@
       }
 
       .hero {
-        min-height: 72vh;
+        min-height: 60vh;
         padding-top: 34px;
       }
 
@@ -319,62 +371,62 @@
     </nav>
 
     <main class="content">
-    <section class="report-section" id="overview">
-      <h2>Overview</h2>
-      <p>{{SUMMARY_PARAGRAPH}}</p>
-      <blockquote>{{KEY_CLAIM_OR_INTERPRETATION}}</blockquote>
-    </section>
+      <section class="report-section" id="overview">
+        <h2>Overview</h2>
+        <p>{{SUMMARY_PARAGRAPH}}</p>
+        <blockquote>{{KEY_CLAIM_OR_INTERPRETATION}}</blockquote>
+      </section>
 
-    <section class="report-section" id="method">
-      <h2>Method</h2>
-      <h3>{{METHOD_SECTION_TITLE}}</h3>
-      <p>{{METHOD_DESCRIPTION}}</p>
-      <pre><code>{{OPTIONAL_COMMAND_OR_CONFIG}}</code></pre>
-    </section>
+      <section class="report-section" id="method">
+        <h2>Method</h2>
+        <h3>{{METHOD_SECTION_TITLE}}</h3>
+        <p>{{METHOD_DESCRIPTION}}</p>
+        <pre><code>{{OPTIONAL_COMMAND_OR_CONFIG}}</code></pre>
+      </section>
 
-    <section class="report-section" id="results">
-      <h2>Results</h2>
-      <figure>
-        <img data-image-mime="{{RESULT_IMAGE_MIME}}" data-image-base64="{{RESULT_IMAGE_BASE64}}" alt="{{RESULT_IMAGE_ALT}}">
-        <figcaption>{{RESULT_IMAGE_CAPTION}}</figcaption>
-      </figure>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Check</th>
-              <th>Result</th>
-              <th>Interpretation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{CHECK_NAME}}</td>
-              <td>{{CHECK_RESULT}}</td>
-              <td>{{CHECK_INTERPRETATION}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
+      <section class="report-section" id="results">
+        <h2>Results</h2>
+        <figure>
+          <img data-image-mime="{{RESULT_IMAGE_MIME}}" data-image-base64="{{RESULT_IMAGE_BASE64}}" alt="{{RESULT_IMAGE_ALT}}">
+          <figcaption>{{RESULT_IMAGE_CAPTION}}</figcaption>
+        </figure>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Check</th>
+                <th>Result</th>
+                <th>Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{CHECK_NAME}}</td>
+                <td>{{CHECK_RESULT}}</td>
+                <td>{{CHECK_INTERPRETATION}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-    <section class="report-section" id="audit">
-      <h2>Audit</h2>
-      <ul>
-        <li>{{AUDIT_ITEM_1}}</li>
-        <li>{{AUDIT_ITEM_2}}</li>
-        <li>{{AUDIT_ITEM_3}}</li>
-      </ul>
-    </section>
+      <section class="report-section" id="audit">
+        <h2>Audit</h2>
+        <ul>
+          <li>{{AUDIT_ITEM_1}}</li>
+          <li>{{AUDIT_ITEM_2}}</li>
+          <li>{{AUDIT_ITEM_3}}</li>
+        </ul>
+      </section>
 
-    <section class="report-section" id="next-steps">
-      <h2>Next Steps</h2>
-      <ol>
-        <li>{{NEXT_STEP_1}}</li>
-        <li>{{NEXT_STEP_2}}</li>
-        <li>{{NEXT_STEP_3}}</li>
-      </ol>
-    </section>
+      <section class="report-section" id="next-steps">
+        <h2>Next Steps</h2>
+        <ol>
+          <li>{{NEXT_STEP_1}}</li>
+          <li>{{NEXT_STEP_2}}</li>
+          <li>{{NEXT_STEP_3}}</li>
+        </ol>
+      </section>
     </main>
   </div>
 

@@ -7,6 +7,8 @@ This repository is a static research report archive released from `main`.
 - `index.html` is the main research index.
 - `styles/site.css` contains the shared dark theme for the main index.
 - `scripts/site.js` discovers project folders and builds the report list.
+- `templates/unlock-template.html` is the shared password unlock shell template for project index pages.
+- `templates/report-template.html` is the shared encrypted report body template.
 - Projects live under `projects/<slug>/`.
 - Each project should expose its own `projects/<slug>/index.html`.
 
@@ -19,6 +21,8 @@ The main index should be written mostly in English. Project cards should not sho
 
 Do not rely on project `assets/` files for report content or thumbnails. Project images should be base64-encoded and embedded into the report HTML before encryption so they are protected inside `report.enc`. Prefer raw base64 fields that the template converts to Blob URLs, rather than public asset references.
 
+Use a VS Code Default Dark+ inspired palette across the repository: editor background `#1e1e1e`, side panel `#252526`, raised panel `#2d2d30`, input/border `#3c3c3c`, foreground `#d4d4d4`, muted text `#858585`, accent `#007acc`, button `#0e639c`, and link/syntax blue `#569cd6`. Root index, unlock shells, report templates, generated reports, and current encrypted reports should stay on this base palette unless the user explicitly requests a different theme.
+
 Use `projects/3dgs-ri/` as the baseline report layout: dark hero, left sticky contents rail, and right-side report content. `templates/report-template.html` is the repo-level starting point for new plaintext report bodies and should keep that 3dgs-ri-derived dark structure.
 
 For GitHub-hosted browsing, `scripts/site.js` uses the GitHub Contents API for `Lukael/research` on `main`. For local static serving, it falls back to parsing the directory listing under `projects/`.
@@ -27,7 +31,7 @@ For GitHub-hosted browsing, `scripts/site.js` uses the GitHub Contents API for `
 
 To add a new report project:
 
-1. Create `projects/<slug>/index.html` as a public unlock shell.
+1. Create `projects/<slug>/index.html` from `templates/unlock-template.html` as a public unlock shell.
 2. Keep `projects/<slug>/assets/` empty or absent.
 3. Start the plaintext report body from `templates/report-template.html`; it is based on the `3dgs-ri` dark two-column report layout.
 4. Base64-encode report images and embed the encoded image data into the plaintext report HTML.
@@ -43,6 +47,7 @@ All project reports in this repository should be protected with client-side encr
 
 - `projects/<slug>/index.html` should be only the unlock shell.
 - Unlock shells should show only the project title above the password form. Do not add public subtitles, summaries, or report descriptions to the password page.
+- Unlock shells should use `templates/unlock-template.html` and the shared VS Code Dark+ based palette.
 - `projects/<slug>/report.enc` should be the encrypted report payload.
 - Report images, figures, plots, and other media should be base64-encoded and embedded inside the report HTML before encryption, not placed in public project assets.
 - `templates/report-template.html` demonstrates the preferred raw base64 image fields and client-side Blob URL conversion; do not make public project images depend on `data:image` URLs or asset files.

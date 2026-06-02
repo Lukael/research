@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{PROJECT_TITLE}}</title>
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #1e1e1e;
+      --panel: #252526;
+      --panel-strong: #2d2d30;
+      --input: #3c3c3c;
+      --line: #3c3c3c;
+      --ink: #d4d4d4;
+      --muted: #858585;
+      --accent: #007acc;
+      --accent-strong: #569cd6;
+      --button: #0e639c;
+      --button-hover: #1177bb;
+      --button-ink: #ffffff;
+      --danger: #f44747;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 32px 18px;
+    }
+
+    .unlock-shell {
+      width: min(100%, 520px);
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.34);
+    }
+
+    h1 {
+      margin: 0 0 22px;
+      color: var(--ink);
+      font-size: 29px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    input {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--input);
+      color: var(--ink);
+      font: inherit;
+      padding: 0 13px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.24);
+    }
+
+    button {
+      min-height: 46px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--button);
+      color: var(--button-ink);
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--button-hover);
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.62;
+    }
+
+    #unlock-status {
+      min-height: 20px;
+      margin: 2px 0 0;
+      color: var(--danger);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .is-unlocked {
+      display: block;
+      padding: 0;
+    }
+
+    .is-unlocked .unlock-shell {
+      display: none;
+    }
+
+    .report-frame {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: var(--bg);
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 18px;
+      }
+
+      .unlock-shell {
+        padding: 24px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+  <script src="../../scripts/decrypt-report.js" defer></script>
+</head>
+<body data-payload="report.enc">
+  <main class="unlock-shell" aria-labelledby="report-title">
+    <h1 id="report-title">{{PROJECT_TITLE}}</h1>
+    <form id="unlock-form">
+      <label class="visually-hidden" for="report-password">Password</label>
+      <input id="report-password" name="password" type="password" autocomplete="current-password" autofocus required>
+      <button type="submit">Unlock</button>
+      <p id="unlock-status" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+</body>
+</html>
