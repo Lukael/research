@@ -126,15 +126,16 @@
 
   function formatCommitDate(value) {
     if (!value) {
-      return "정보 없음";
+      return "Unavailable";
     }
 
-    return new Intl.DateTimeFormat("ko-KR", {
+    return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
-      month: "short",
+      month: "long",
       day: "numeric",
       hour: "numeric",
       minute: "2-digit",
+      hour12: false,
       timeZone: "Asia/Seoul",
       timeZoneName: "short",
     }).format(new Date(value));
@@ -187,9 +188,9 @@
 
     link.className = "card-link";
     link.href = project.href;
-    link.textContent = "보고서 열기";
+    link.textContent = "Open report";
 
-    commitMeta.append("마지막 커밋 ", commitTime);
+    commitMeta.append("Last commit ", commitTime);
     topline.append(statusLabel, slugLabel);
     article.append(topline, title, commitMeta, link);
 
@@ -200,7 +201,7 @@
     grid.innerHTML = "";
 
     if (!projects.length) {
-      grid.innerHTML = '<p class="empty-state">아직 공개된 보고서가 없습니다.</p>';
+      grid.innerHTML = '<p class="empty-state">No project reports are available yet.</p>';
       return;
     }
 
@@ -216,7 +217,7 @@
     .then(render)
     .catch(function () {
       if (status) {
-        status.textContent = "보고서를 불러오지 못했습니다.";
+        status.textContent = "Unable to load project reports.";
       }
     });
 })();

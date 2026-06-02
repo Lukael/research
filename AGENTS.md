@@ -15,9 +15,9 @@ The main index reads project metadata from each project `index.html`:
 - `<title>` or the first `<h1>` for the display title.
 - Last commit date/time from the GitHub commits API for `projects/<slug>/`.
 
-The main index should not show project thumbnails or report summaries. Keep project cards focused on title, slug, publication state, last commit date/time, and the report link.
+The main index should be written mostly in English. Project cards should not show thumbnails or report summaries. Keep cards focused on title, slug, publication state, last commit date/time, and the report link. Render commit time in 24-hour format.
 
-Do not rely on project `assets/` files for report content or thumbnails. Project images should be base64-encoded and embedded into the report HTML before encryption so they are protected inside `report.enc`.
+Do not rely on project `assets/` files for report content or thumbnails. Project images should be base64-encoded and embedded into the report HTML before encryption so they are protected inside `report.enc`. Prefer raw base64 fields that the template converts to Blob URLs, rather than public asset references.
 
 For GitHub-hosted browsing, `scripts/site.js` uses the GitHub Contents API for `Lukael/research` on `main`. For local static serving, it falls back to parsing the directory listing under `projects/`.
 
@@ -27,9 +27,11 @@ To add a new report project:
 
 1. Create `projects/<slug>/index.html` as a public unlock shell.
 2. Keep `projects/<slug>/assets/` empty or absent.
-3. Base64-encode report images and embed the encoded image data into the plaintext report HTML.
-4. Store the encrypted report payload as `projects/<slug>/report.enc`.
-5. Serve the repo statically and verify the root index discovers the project automatically.
+3. Start the plaintext report body from `templates/report-template.html`.
+4. Base64-encode report images and embed the encoded image data into the plaintext report HTML.
+5. Keep plaintext templates outside `projects/` so the root index never discovers them.
+6. Store the encrypted report payload as `projects/<slug>/report.enc`.
+7. Serve the repo statically and verify the root index discovers the project automatically.
 
 Do not hard-code new projects into the root `index.html` unless the discovery flow is intentionally being changed.
 
@@ -38,8 +40,10 @@ Do not hard-code new projects into the root `index.html` unless the discovery fl
 All project reports in this repository should be protected with client-side encryption. Project names and unlock shells may remain public, but report bodies and report media should not be committed as crawlable plaintext in the current tree.
 
 - `projects/<slug>/index.html` should be only the unlock shell.
+- Unlock shells should show only the project title above the password form. Do not add public subtitles, summaries, or report descriptions to the password page.
 - `projects/<slug>/report.enc` should be the encrypted report payload.
 - Report images, figures, plots, and other media should be base64-encoded and embedded inside the report HTML before encryption, not placed in public project assets.
+- `templates/report-template.html` demonstrates the preferred raw base64 image fields and client-side Blob URL conversion; do not make public project images depend on `data:image` URLs or asset files.
 - New project `assets/` directories should remain empty or be omitted.
 - `scripts/decrypt-report.js` handles password-based decrypt and renders the report in an iframe.
 
@@ -55,7 +59,7 @@ The current payload uses:
 
 Because salt and IV are random, re-encrypting with the same password should still change `report.enc`. That is expected.
 
-`projects/fm-fpm/` is the current example of this pattern. Future automation should read `process.env.REPORT_PASSWORD` or an equivalent runtime secret instead of embedding a password.
+`projects/fm-fpm/` and `projects/3dgs-ri/` are current examples of this pattern. Future automation should read `process.env.REPORT_PASSWORD` or an equivalent runtime secret instead of embedding a password.
 
 ## Client-Side Encryption Caveats
 
