@@ -1,0 +1,23 @@
+{
+  "device": "cpu",
+  "device_report": {
+    "selected_device": "cpu",
+    "cuda_available": false,
+    "torch_version": "2.5.1+cpu",
+    "cuda_device_count": 0
+  },
+  "height": 64,
+  "width": 64,
+  "num_slices": 16,
+  "num_gaussians": 16,
+  "num_steps": 40,
+  "gaussian_num_parameters": 112,
+  "voxel_num_parameters_same_grid": 65536,
+  "parameter_reduction_vs_voxel": 585.1428571428571,
+  "final_normalized_intensity_mse": 1.3569056989126693e-07,
+  "final_slice_path_integral_mse": 5.7439603715417e-18,
+  "initial_loss": 2.4738449155847775e-07,
+  "final_loss": 1.5870840286424936e-07,
+  "elapsed_seconds": 0.6070709261111915,
+  "forward_tensor_memory_bytes_gt_slices": 262144
+}

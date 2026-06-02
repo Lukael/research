@@ -1,0 +1,113 @@
+{
+  "cases": {
+    "single_gaussian": {
+      "device": "cpu",
+      "device_report": {
+        "selected_device": "cpu",
+        "cuda_available": false,
+        "torch_version": "2.5.1+cpu",
+        "cuda_device_count": 0
+      },
+      "height": 64,
+      "width": 64,
+      "num_slices": 16,
+      "num_gaussians": 16,
+      "num_steps": 40,
+      "gaussian_num_parameters": 112,
+      "voxel_num_parameters_same_grid": 65536,
+      "parameter_reduction_vs_voxel": 585.1428571428571,
+      "final_normalized_intensity_mse": 1.3569056989126693e-07,
+      "final_slice_path_integral_mse": 5.7439603715417e-18,
+      "initial_loss": 2.4738449155847775e-07,
+      "final_loss": 1.5870840286424936e-07,
+      "elapsed_seconds": 0.6070709261111915,
+      "forward_tensor_memory_bytes_gt_slices": 262144,
+      "sample_type": "single_gaussian",
+      "object_type": "single_gaussian",
+      "output_dir": "outputs/report_samples/single_gaussian"
+    },
+    "multiple_gaussians": {
+      "device": "cpu",
+      "device_report": {
+        "selected_device": "cpu",
+        "cuda_available": false,
+        "torch_version": "2.5.1+cpu",
+        "cuda_device_count": 0
+      },
+      "height": 64,
+      "width": 64,
+      "num_slices": 16,
+      "num_gaussians": 32,
+      "num_steps": 40,
+      "gaussian_num_parameters": 224,
+      "voxel_num_parameters_same_grid": 65536,
+      "parameter_reduction_vs_voxel": 292.57142857142856,
+      "final_normalized_intensity_mse": 3.1258036869985517e-06,
+      "final_slice_path_integral_mse": 3.846238060729175e-18,
+      "initial_loss": 3.4469790080038365e-06,
+      "final_loss": 3.1658405532652978e-06,
+      "elapsed_seconds": 0.7103891710285097,
+      "forward_tensor_memory_bytes_gt_slices": 262144,
+      "sample_type": "multiple_gaussians",
+      "object_type": "multiple_gaussians",
+      "output_dir": "outputs/report_samples/multiple_gaussians"
+    },
+    "two_layer": {
+      "device": "cpu",
+      "device_report": {
+        "selected_device": "cpu",
+        "cuda_available": false,
+        "torch_version": "2.5.1+cpu",
+        "cuda_device_count": 0
+      },
+      "height": 64,
+      "width": 64,
+      "num_slices": 16,
+      "num_gaussians": 32,
+      "num_steps": 40,
+      "gaussian_num_parameters": 224,
+      "voxel_num_parameters_same_grid": 65536,
+      "parameter_reduction_vs_voxel": 292.57142857142856,
+      "final_normalized_intensity_mse": 2.1911848762101727e-06,
+      "final_slice_path_integral_mse": 2.0201474402941496e-17,
+      "initial_loss": 2.3501065697928425e-06,
+      "final_loss": 2.2241304122871952e-06,
+      "elapsed_seconds": 0.6099001518450677,
+      "forward_tensor_memory_bytes_gt_slices": 262144,
+      "sample_type": "two_layer",
+      "object_type": "two_layer",
+      "output_dir": "outputs/report_samples/two_layer"
+    },
+    "beads": {
+      "device": "cpu",
+      "device_report": {
+        "selected_device": "cpu",
+        "cuda_available": false,
+        "torch_version": "2.5.1+cpu",
+        "cuda_device_count": 0
+      },
+      "height": 64,
+      "width": 64,
+      "num_slices": 16,
+      "num_gaussians": 48,
+      "num_steps": 40,
+      "gaussian_num_parameters": 336,
+      "voxel_num_parameters_same_grid": 65536,
+      "parameter_reduction_vs_voxel": 195.04761904761904,
+      "final_normalized_intensity_mse": 2.385087100265082e-05,
+      "final_slice_path_integral_mse": 2.2174817978943926e-18,
+      "initial_loss": 2.2443540729000233e-05,
+      "final_loss": 2.3894615878816694e-05,
+      "elapsed_seconds": 0.48113270103931427,
+      "forward_tensor_memory_bytes_gt_slices": 262144,
+      "sample_type": "beads",
+      "object_type": "beads",
+      "output_dir": "outputs/report_samples/beads"
+    }
+  },
+  "settings": {
+    "steps": 40,
+    "size": 64,
+    "slices": 16
+  }
+}
