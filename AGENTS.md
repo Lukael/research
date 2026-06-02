@@ -22,18 +22,19 @@ For GitHub-hosted browsing, `scripts/site.js` uses the GitHub Contents API for `
 
 To add a new report project:
 
-1. Create `projects/<slug>/index.html`.
+1. Create `projects/<slug>/index.html` as a public unlock shell.
 2. Add `projects/<slug>/assets/thumbnail.png` if a thumbnail is useful.
-3. Serve the repo statically and verify the root index discovers the project automatically.
+3. Store the encrypted report payload as `projects/<slug>/report.enc`.
+4. Serve the repo statically and verify the root index discovers the project automatically.
 
 Do not hard-code new projects into the root `index.html` unless the discovery flow is intentionally being changed.
 
 ## Encrypted Reports
 
-`projects/fm-fpm/` is currently protected with client-side encryption:
+All project reports in this repository should be protected with client-side encryption. Project names, thumbnails, and unlock shells may remain public, but report bodies should not be committed as crawlable plaintext in the current tree.
 
-- `projects/fm-fpm/index.html` is only the unlock shell.
-- `projects/fm-fpm/report.enc` is the encrypted report payload.
+- `projects/<slug>/index.html` should be only the unlock shell.
+- `projects/<slug>/report.enc` should be the encrypted report payload.
 - `scripts/decrypt-report.js` handles password-based decrypt and renders the report in an iframe.
 
 The report password is not stored in Git. Use the local environment variable `REPORT_PASSWORD` when re-encrypting report payloads. Do not print the password in command output, commit messages, logs, or documentation.
@@ -46,7 +47,7 @@ The current payload uses:
 
 Because salt and IV are random, re-encrypting with the same password should still change `report.enc`. That is expected.
 
-The existing encrypted report was re-encrypted with `REPORT_PASSWORD`. Future automation should read `process.env.REPORT_PASSWORD` or an equivalent runtime secret instead of embedding a password.
+`projects/fm-fpm/` is the current example of this pattern. Future automation should read `process.env.REPORT_PASSWORD` or an equivalent runtime secret instead of embedding a password.
 
 ## Client-Side Encryption Caveats
 
