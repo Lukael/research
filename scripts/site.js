@@ -155,7 +155,7 @@
         return {
           slug: slug,
           title: title,
-          href: path,
+          href: path + "index.html",
           lastCommit: lastCommit,
         };
       });
