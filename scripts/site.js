@@ -161,6 +161,25 @@
       });
   }
 
+  function commitTimestamp(project) {
+    var date = project.lastCommit && project.lastCommit.date;
+    var timestamp = date ? Date.parse(date) : 0;
+
+    return Number.isFinite(timestamp) ? timestamp : 0;
+  }
+
+  function sortByLastCommit(projects) {
+    return projects.slice().sort(function (left, right) {
+      var dateDelta = commitTimestamp(right) - commitTimestamp(left);
+
+      if (dateDelta) {
+        return dateDelta;
+      }
+
+      return left.slug.localeCompare(right.slug);
+    });
+  }
+
   function createCard(project) {
     var article = document.createElement("article");
     var topline = document.createElement("div");
@@ -214,6 +233,7 @@
     .then(function (slugs) {
       return Promise.all(slugs.map(readProject));
     })
+    .then(sortByLastCommit)
     .then(render)
     .catch(function () {
       if (status) {
