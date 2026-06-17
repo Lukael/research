@@ -54,8 +54,7 @@
       });
   }
 
-  function discoverFromDirectoryListing() {
-    return fetchText("projects/").then(function (html) {
+  function linksFromDirectoryListing(html) {
       var parser = new DOMParser();
       var doc = parser.parseFromString(html, "text/html");
 
@@ -69,6 +68,11 @@
         .map(function (href) {
           return href.replace(/\/$/, "");
         });
+  }
+
+  function discoverFromDirectoryListing() {
+    return fetchText("projects/").then(function (html) {
+      return linksFromDirectoryListing(html);
     });
   }
 
@@ -80,9 +84,20 @@
       });
   }
 
-  function commitUrlFor(slug) {
-    var path = encodeURIComponent("projects/" + slug);
+  function contentsUrlFor(path) {
+    return (
+      "https://api.github.com/repos/" +
+      owner +
+      "/" +
+      repo +
+      "/contents/" +
+      path +
+      "?ref=" +
+      branch
+    );
+  }
 
+  function commitUrlFor(path) {
     return (
       "https://api.github.com/repos/" +
       owner +
@@ -91,13 +106,13 @@
       "/commits?sha=" +
       branch +
       "&path=" +
-      path +
+      encodeURIComponent(path) +
       "&per_page=1"
     );
   }
 
-  function readLastCommit(slug) {
-    return fetch(commitUrlFor(slug))
+  function readLastCommitForPath(path) {
+    return fetch(commitUrlFor(path))
       .then(function (response) {
         if (!response.ok) {
           throw new Error("Unable to load commit metadata");
@@ -124,6 +139,43 @@
       });
   }
 
+  function discoverProjectReportsFromGitHub(slug) {
+    return fetch(contentsUrlFor("projects/" + encodeURIComponent(slug) + "/reports"))
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Unable to discover project reports from GitHub");
+        }
+        return response.json();
+      })
+      .then(function (items) {
+        return items
+          .filter(function (item) {
+            return item.type === "dir";
+          })
+          .map(function (item) {
+            return item.name;
+          });
+      });
+  }
+
+  function discoverProjectReportsFromDirectoryListing(slug) {
+    return fetchText("projects/" + slug + "/reports/")
+      .then(linksFromDirectoryListing)
+      .catch(function () {
+        return [];
+      });
+  }
+
+  function discoverProjectReports(slug) {
+    return discoverProjectReportsFromGitHub(slug)
+      .catch(function () {
+        return discoverProjectReportsFromDirectoryListing(slug);
+      })
+      .then(function (reportSlugs) {
+        return Array.from(new Set(reportSlugs)).sort();
+      });
+  }
+
   function formatCommitDate(value) {
     if (!value) {
       return "Unavailable";
@@ -141,19 +193,24 @@
     }).format(new Date(value));
   }
 
-  function readProject(slug) {
-    var path = "projects/" + slug + "/";
+  function readReport(slug, reportSlug, fallbackTitle) {
+    var path = reportSlug ? "projects/" + slug + "/reports/" + reportSlug + "/" : "projects/" + slug + "/";
+    var commitPath = reportSlug ? "projects/" + slug + "/reports/" + reportSlug : "projects/" + slug + "/report.enc";
 
-    return Promise.all([fetchText(path + "index.html"), readLastCommit(slug)])
+    return Promise.all([fetchText(path + "index.html"), readLastCommitForPath(commitPath)])
       .then(function (results) {
         var html = results[0];
         var lastCommit = results[1];
         var parser = new DOMParser();
         var doc = parser.parseFromString(html, "text/html");
-        var title = textFrom(doc, "h1") || textFrom(doc, "title") || titleFromSlug(slug);
+        var title =
+          textFrom(doc, "h1") ||
+          textFrom(doc, "title") ||
+          fallbackTitle ||
+          titleFromSlug(reportSlug || slug);
 
         return {
-          slug: slug,
+          reportSlug: reportSlug || "main",
           title: title,
           href: path + "index.html",
           lastCommit: lastCommit,
@@ -161,8 +218,45 @@
       });
   }
 
-  function commitTimestamp(project) {
-    var date = project.lastCommit && project.lastCommit.date;
+  function latestCommit(reports) {
+    return reports.reduce(function (latest, report) {
+      var parsedTimestamp = latest && latest.date ? Date.parse(latest.date) : 0;
+      var latestTimestamp = Number.isFinite(parsedTimestamp) ? parsedTimestamp : 0;
+
+      if (!latest || commitTimestamp(report) > latestTimestamp) {
+        return report.lastCommit;
+      }
+
+      return latest;
+    }, null);
+  }
+
+  function readProject(slug) {
+    return Promise.all([readReport(slug, "", titleFromSlug(slug)), discoverProjectReports(slug)])
+      .then(function (results) {
+        var mainReport = results[0];
+        var reportSlugs = results[1];
+
+        return Promise.all(
+          reportSlugs.map(function (reportSlug) {
+            return readReport(slug, reportSlug, titleFromSlug(reportSlug));
+          })
+        ).then(function (extraReports) {
+          var reports = sortByLastCommit([mainReport].concat(extraReports));
+
+          return {
+            slug: slug,
+            title: mainReport.title,
+            href: mainReport.href,
+            reports: reports,
+            lastCommit: latestCommit(reports),
+          };
+        });
+      });
+  }
+
+  function commitTimestamp(item) {
+    var date = item.lastCommit && item.lastCommit.date;
     var timestamp = date ? Date.parse(date) : 0;
 
     return Number.isFinite(timestamp) ? timestamp : 0;
@@ -188,13 +282,13 @@
     var title = document.createElement("h3");
     var commitMeta = document.createElement("p");
     var commitTime = document.createElement("time");
-    var link = document.createElement("a");
+    var reportList = document.createElement("div");
 
     article.className = "report-card";
 
     topline.className = "card-topline";
     statusLabel.className = "status status-complete";
-    statusLabel.textContent = "Published";
+    statusLabel.textContent = project.reports.length === 1 ? "1 report" : project.reports.length + " reports";
     slugLabel.textContent = project.slug.toUpperCase();
 
     title.textContent = project.title;
@@ -205,13 +299,32 @@
       commitTime.dateTime = project.lastCommit.date;
     }
 
-    link.className = "card-link";
-    link.href = project.href;
-    link.textContent = "Open report";
+    reportList.className = "report-list";
+    reportList.setAttribute("aria-label", project.title + " reports");
+
+    project.reports.forEach(function (report) {
+      var row = document.createElement("a");
+      var reportTitle = document.createElement("span");
+      var reportDate = document.createElement("time");
+
+      row.className = "report-row";
+      row.href = report.href;
+      reportTitle.className = "report-link-title";
+      reportTitle.textContent = report.title;
+      reportDate.className = "report-link-date";
+      reportDate.textContent = formatCommitDate(report.lastCommit && report.lastCommit.date);
+
+      if (report.lastCommit && report.lastCommit.date) {
+        reportDate.dateTime = report.lastCommit.date;
+      }
+
+      row.append(reportTitle, reportDate);
+      reportList.appendChild(row);
+    });
 
     commitMeta.append("Last commit ", commitTime);
     topline.append(statusLabel, slugLabel);
-    article.append(topline, title, commitMeta, link);
+    article.append(topline, title, commitMeta, reportList);
 
     return article;
   }

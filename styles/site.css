@@ -165,11 +165,38 @@ main {
   font-weight: 760;
 }
 
-.card-link {
-  align-self: end;
-  justify-self: start;
-  color: var(--accent-strong);
+.report-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.report-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 11px 12px;
+  text-decoration: none;
+}
+
+.report-row:hover {
+  border-color: var(--accent);
+  background: var(--panel-strong);
+}
+
+.report-link-title {
+  overflow-wrap: anywhere;
+  color: var(--ink);
   font-weight: 800;
+  line-height: 1.25;
+}
+
+.report-link-date {
+  color: var(--muted);
+  font-size: 0.86rem;
 }
 
 .empty-state {

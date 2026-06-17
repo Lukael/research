@@ -11,13 +11,16 @@ This repository is a static research report archive released from `main`.
 - `templates/report-template.html` is the shared encrypted report body template.
 - Projects live under `projects/<slug>/`.
 - Each project should expose its own `projects/<slug>/index.html`.
+- A project may expose additional reports under `projects/<slug>/reports/<report-slug>/index.html`.
 
-The main index reads project metadata from each project `index.html`:
+The main index reads project metadata from each project and report `index.html`:
 
 - `<title>` or the first `<h1>` for the display title.
-- Last commit date/time from the GitHub commits API for `projects/<slug>/`.
+- Last commit date/time from the GitHub commits API for the relevant `report.enc` or report directory.
 
-The main index should be written mostly in English. Project cards should not show thumbnails or report summaries. Keep cards focused on title, slug, publication state, last commit date/time, and the report link. Render commit time in 24-hour format.
+The main index should be written mostly in English. Project cards should not show thumbnails or report summaries. Keep cards focused on title, slug, report count, last commit date/time, and compact report links. Render commit time in 24-hour format.
+
+For multi-report projects, keep the root project card grouped by project and list individual reports inside that card. Do not split the same project into many unrelated root-level cards unless the user explicitly wants separate projects.
 
 Do not rely on project `assets/` files for report content or thumbnails. Project images should be base64-encoded and embedded into the report HTML before encryption so they are protected inside `report.enc`. Prefer raw base64 fields that the template converts to Blob URLs, rather than public asset references.
 
@@ -41,14 +44,25 @@ To add a new report project:
 
 Do not hard-code new projects into the root `index.html` unless the discovery flow is intentionally being changed.
 
+To add multiple reports under one project:
+
+1. Keep `projects/<slug>/index.html` and `projects/<slug>/report.enc` as the primary report.
+2. Add each additional report as `projects/<slug>/reports/<report-slug>/index.html`.
+3. Store that report's encrypted payload as `projects/<slug>/reports/<report-slug>/report.enc`.
+4. Use the same unlock/report templates and encryption rules for every report.
+5. Use stable lowercase ASCII report slugs in `YYYY-MM-DD-short-topic` form, for example `2026-06-17-wiener-pseudoclean-baseline`. Use a short revision suffix such as `-r2` only when the same day's report topic needs a distinct rerun. Avoid relative names such as `latest`, `final`, `new`, or `report1`.
+6. Verify the root index groups all discovered reports under one project card.
+
 ## Encrypted Reports
 
 All project reports in this repository should be protected with client-side encryption. Project names and unlock shells may remain public, but report bodies and report media should not be committed as crawlable plaintext in the current tree.
 
 - `projects/<slug>/index.html` should be only the unlock shell.
+- `projects/<slug>/reports/<report-slug>/index.html` should also be only an unlock shell when using multi-report projects.
 - Unlock shells should show only the project title above the password form. Do not add public subtitles, summaries, or report descriptions to the password page.
 - Unlock shells should use `templates/unlock-template.html` and the shared VS Code Dark+ based palette.
 - `projects/<slug>/report.enc` should be the encrypted report payload.
+- Additional report payloads should live at `projects/<slug>/reports/<report-slug>/report.enc`.
 - Report images, figures, plots, and other media should be base64-encoded and embedded inside the report HTML before encryption, not placed in public project assets.
 - `templates/report-template.html` demonstrates the preferred raw base64 image fields and client-side Blob URL conversion; do not make public project images depend on `data:image` URLs or asset files.
 - New and updated reports should follow the 3dgs-ri-derived dark layout unless a project has an explicit reason to diverge.
