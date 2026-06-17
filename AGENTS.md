@@ -7,11 +7,11 @@ This repository is a static research report archive released from `main`.
 - `index.html` is the main research index.
 - `styles/site.css` contains the shared dark theme for the main index.
 - `scripts/site.js` discovers project folders and builds the report list.
-- `templates/unlock-template.html` is the shared password unlock shell template for project index pages.
+- `templates/unlock-template.html` is the shared password unlock shell template for report pages.
 - `templates/report-template.html` is the shared encrypted report body template.
 - Projects live under `projects/<slug>/`.
-- Each project should expose its own `projects/<slug>/index.html`.
-- A project may expose additional reports under `projects/<slug>/reports/<report-slug>/index.html`.
+- Each project should expose its own `projects/<slug>/index.html` as a lightweight project landing or redirect page.
+- Project reports live under `projects/<slug>/reports/<report-slug>/index.html`.
 
 The main index reads project metadata from each project and report `index.html`:
 
@@ -34,35 +34,37 @@ For GitHub-hosted browsing, `scripts/site.js` uses the GitHub Contents API for `
 
 To add a new report project:
 
-1. Create `projects/<slug>/index.html` from `templates/unlock-template.html` as a public unlock shell.
+1. Create `projects/<slug>/index.html` as a lightweight project landing or redirect page that points to `reports/chapter-01/index.html`.
 2. Keep `projects/<slug>/assets/` empty or absent.
 3. Start the plaintext report body from `templates/report-template.html`; it is based on the `3dgs-ri` dark two-column report layout.
 4. Base64-encode report images and embed the encoded image data into the plaintext report HTML.
 5. Keep plaintext templates outside `projects/` so the root index never discovers them.
-6. Store the encrypted report payload as `projects/<slug>/report.enc`.
-7. Serve the repo statically and verify the root index discovers the project automatically.
+6. Create the first report unlock shell at `projects/<slug>/reports/chapter-01/index.html`.
+7. Store the first encrypted report payload as `projects/<slug>/reports/chapter-01/report.enc`.
+8. Serve the repo statically and verify the root index discovers the project automatically.
 
 Do not hard-code new projects into the root `index.html` unless the discovery flow is intentionally being changed.
 
 To add multiple reports under one project:
 
-1. Keep `projects/<slug>/index.html` and `projects/<slug>/report.enc` as the primary report.
-2. Add each additional report as `projects/<slug>/reports/<report-slug>/index.html`.
-3. Store that report's encrypted payload as `projects/<slug>/reports/<report-slug>/report.enc`.
-4. Use the same unlock/report templates and encryption rules for every report.
-5. Use stable chapter-based report slugs in increasing numeric order: `chapter-001`, `chapter-002`, `chapter-003`, and so on. Keep the number zero-padded to three digits so folder sorting stays readable. Do not rename older chapters after publishing; add the next chapter for new report material. Avoid relative names such as `latest`, `final`, `new`, or `report1`.
-6. Verify the root index groups all discovered reports under one project card.
+1. Keep `projects/<slug>/index.html` as the project landing or redirect page.
+2. Keep the first report at `projects/<slug>/reports/chapter-01/index.html`.
+3. Add each additional report as `projects/<slug>/reports/<report-slug>/index.html`.
+4. Store each report's encrypted payload as `projects/<slug>/reports/<report-slug>/report.enc`.
+5. Use the same unlock/report templates and encryption rules for every report.
+6. Use stable chapter-based report slugs in increasing numeric order: `chapter-01`, `chapter-02`, `chapter-03`, and so on. Keep the number zero-padded to two digits so folder sorting stays readable. Do not rename older chapters after publishing; add the next chapter for new report material. Avoid relative names such as `latest`, `final`, `new`, or `report1`.
+7. Verify the root index groups all discovered reports under one project card.
 
 ## Encrypted Reports
 
 All project reports in this repository should be protected with client-side encryption. Project names and unlock shells may remain public, but report bodies and report media should not be committed as crawlable plaintext in the current tree.
 
-- `projects/<slug>/index.html` should be only the unlock shell.
-- `projects/<slug>/reports/<report-slug>/index.html` should also be only an unlock shell when using multi-report projects.
+- `projects/<slug>/index.html` should be only a lightweight project landing or redirect page, not an encrypted report shell.
+- `projects/<slug>/reports/<report-slug>/index.html` should be only an unlock shell.
 - Unlock shells should show only the project title above the password form. Do not add public subtitles, summaries, or report descriptions to the password page.
 - Unlock shells should use `templates/unlock-template.html` and the shared VS Code Dark+ based palette.
-- `projects/<slug>/report.enc` should be the encrypted report payload.
-- Additional report payloads should live at `projects/<slug>/reports/<report-slug>/report.enc`.
+- When placing the unlock shell under `projects/<slug>/reports/<report-slug>/`, update the decrypt script path from `../../scripts/decrypt-report.js` to `../../../../scripts/decrypt-report.js`.
+- Report payloads should live at `projects/<slug>/reports/<report-slug>/report.enc`.
 - Report images, figures, plots, and other media should be base64-encoded and embedded inside the report HTML before encryption, not placed in public project assets.
 - `templates/report-template.html` demonstrates the preferred raw base64 image fields and client-side Blob URL conversion; do not make public project images depend on `data:image` URLs or asset files.
 - New and updated reports should follow the 3dgs-ri-derived dark layout unless a project has an explicit reason to diverge.

@@ -24,6 +24,16 @@
       .join("-");
   }
 
+  function labelFromReportSlug(slug) {
+    var chapter = slug.match(/^chapter-(\d{2})$/);
+
+    if (chapter) {
+      return "Chapter " + chapter[1];
+    }
+
+    return titleFromSlug(slug);
+  }
+
   function fetchText(url) {
     return fetch(url).then(function (response) {
       if (!response.ok) {
@@ -55,19 +65,19 @@
   }
 
   function linksFromDirectoryListing(html) {
-      var parser = new DOMParser();
-      var doc = parser.parseFromString(html, "text/html");
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(html, "text/html");
 
-      return Array.from(doc.querySelectorAll("a"))
-        .map(function (link) {
-          return link.getAttribute("href") || "";
-        })
-        .filter(function (href) {
-          return href && href !== "../" && href.slice(-1) === "/";
-        })
-        .map(function (href) {
-          return href.replace(/\/$/, "");
-        });
+    return Array.from(doc.querySelectorAll("a"))
+      .map(function (link) {
+        return link.getAttribute("href") || "";
+      })
+      .filter(function (href) {
+        return href && href !== "../" && href.slice(-1) === "/";
+      })
+      .map(function (href) {
+        return href.replace(/\/$/, "");
+      });
   }
 
   function discoverFromDirectoryListing() {
@@ -195,7 +205,9 @@
 
   function readReport(slug, reportSlug, fallbackTitle) {
     var path = reportSlug ? "projects/" + slug + "/reports/" + reportSlug + "/" : "projects/" + slug + "/";
-    var commitPath = reportSlug ? "projects/" + slug + "/reports/" + reportSlug : "projects/" + slug + "/report.enc";
+    var commitPath = reportSlug
+      ? "projects/" + slug + "/reports/" + reportSlug + "/report.enc"
+      : "projects/" + slug + "/report.enc";
 
     return Promise.all([fetchText(path + "index.html"), readLastCommitForPath(commitPath)])
       .then(function (results) {
@@ -231,23 +243,48 @@
     }, null);
   }
 
+  function readProjectShell(slug) {
+    return fetchText("projects/" + slug + "/index.html")
+      .then(function (html) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, "text/html");
+
+        return textFrom(doc, "h1") || textFrom(doc, "title") || titleFromSlug(slug);
+      })
+      .catch(function () {
+        return titleFromSlug(slug);
+      });
+  }
+
   function readProject(slug) {
-    return Promise.all([readReport(slug, "", titleFromSlug(slug)), discoverProjectReports(slug)])
+    return Promise.all([readProjectShell(slug), discoverProjectReports(slug)])
       .then(function (results) {
-        var mainReport = results[0];
+        var projectTitle = results[0];
         var reportSlugs = results[1];
+
+        if (!reportSlugs.length) {
+          return readReport(slug, "", projectTitle).then(function (mainReport) {
+            return {
+              slug: slug,
+              title: projectTitle,
+              href: mainReport.href,
+              reports: [mainReport],
+              lastCommit: mainReport.lastCommit,
+            };
+          });
+        }
 
         return Promise.all(
           reportSlugs.map(function (reportSlug) {
             return readReport(slug, reportSlug, titleFromSlug(reportSlug));
           })
         ).then(function (extraReports) {
-          var reports = sortByLastCommit([mainReport].concat(extraReports));
+          var reports = sortByLastCommit(extraReports);
 
           return {
             slug: slug,
-            title: mainReport.title,
-            href: mainReport.href,
+            title: projectTitle,
+            href: "projects/" + slug + "/index.html",
             reports: reports,
             lastCommit: latestCommit(reports),
           };
@@ -270,7 +307,7 @@
         return dateDelta;
       }
 
-      return left.slug.localeCompare(right.slug);
+      return (left.slug || left.reportSlug || left.title).localeCompare(right.slug || right.reportSlug || right.title);
     });
   }
 
@@ -304,11 +341,14 @@
 
     project.reports.forEach(function (report) {
       var row = document.createElement("a");
+      var reportLabel = document.createElement("span");
       var reportTitle = document.createElement("span");
       var reportDate = document.createElement("time");
 
       row.className = "report-row";
       row.href = report.href;
+      reportLabel.className = "report-link-label";
+      reportLabel.textContent = report.reportSlug === "main" ? "Primary" : labelFromReportSlug(report.reportSlug);
       reportTitle.className = "report-link-title";
       reportTitle.textContent = report.title;
       reportDate.className = "report-link-date";
@@ -318,7 +358,7 @@
         reportDate.dateTime = report.lastCommit.date;
       }
 
-      row.append(reportTitle, reportDate);
+      row.append(reportLabel, reportTitle, reportDate);
       reportList.appendChild(row);
     });
 

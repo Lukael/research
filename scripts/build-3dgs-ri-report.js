@@ -7,12 +7,14 @@ const { spawnSync } = require('node:child_process');
 const repoRoot = path.resolve(__dirname, '..');
 const sourceRoot = process.env.REPORT_SOURCE_ROOT || '/home/lukael/data/3DGS-RI/ri_gaussian_tomography';
 const projectSlug = '3dgs-ri';
+const reportChapterSlug = 'chapter-01';
 const projectRoot = path.join(repoRoot, 'projects', projectSlug);
+const reportRoot = path.join(projectRoot, 'reports', reportChapterSlug);
 const assetsRoot = path.join(projectRoot, 'assets');
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), `${projectSlug}-report-`));
 const tmpHtml = path.join(tmpRoot, `${projectSlug}-report.html`);
 const reportMd = path.join(sourceRoot, 'REPORT_ko.md');
-const reportEnc = path.join(projectRoot, 'report.enc');
+const reportEnc = path.join(reportRoot, 'report.enc');
 const reportTemplate = fs.readFileSync(path.join(repoRoot, 'templates', 'report-template.html'), 'utf8');
 const unlockTemplate = fs.readFileSync(path.join(repoRoot, 'templates', 'unlock-template.html'), 'utf8');
 const reportStyle = reportTemplate.match(/<style>([\s\S]*?)<\/style>/i)?.[1];
@@ -226,7 +228,37 @@ function renderMarkdown(markdown) {
 }
 
 function reportShell() {
-  return unlockTemplate.replaceAll('{{PROJECT_TITLE}}', '3D Gaussian RI 다중 슬라이스 검증 보고서');
+  return unlockTemplate
+    .replaceAll('{{PROJECT_TITLE}}', '3D Gaussian RI 다중 슬라이스 검증 보고서')
+    .replace('../../scripts/decrypt-report.js', '../../../../scripts/decrypt-report.js');
+}
+
+function projectShell() {
+  return `<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D Gaussian RI 다중 슬라이스 검증 보고서</title>
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+  <meta http-equiv="refresh" content="0; url=reports/${reportChapterSlug}/index.html">
+  <style>
+    :root { color-scheme: dark; --bg: #1e1e1e; --panel: #252526; --line: #3c3c3c; --ink: #d4d4d4; --accent: #569cd6; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; display: grid; place-items: center; margin: 0; background: var(--bg); color: var(--ink); padding: 24px; }
+    main { width: min(100%, 520px); border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 28px; }
+    h1 { margin: 0 0 18px; font-size: 28px; line-height: 1.18; letter-spacing: 0; }
+    a { color: var(--accent); font-weight: 800; text-underline-offset: 0.18em; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>3D Gaussian RI 다중 슬라이스 검증 보고서</h1>
+    <a href="reports/${reportChapterSlug}/index.html">Open Chapter 01</a>
+  </main>
+</body>
+</html>
+`;
 }
 
 function buildReportHtml(markdown) {
@@ -270,9 +302,11 @@ ${reportStyle}
 
 if (!fs.existsSync(reportMd)) fail(`Missing report source: ${reportMd}`);
 fs.mkdirSync(projectRoot, { recursive: true });
+fs.mkdirSync(reportRoot, { recursive: true });
 fs.mkdirSync(tmpRoot, { recursive: true });
 fs.rmSync(assetsRoot, { recursive: true, force: true });
-fs.writeFileSync(path.join(projectRoot, 'index.html'), reportShell());
+fs.writeFileSync(path.join(projectRoot, 'index.html'), projectShell());
+fs.writeFileSync(path.join(reportRoot, 'index.html'), reportShell());
 fs.writeFileSync(tmpHtml, buildReportHtml(fs.readFileSync(reportMd, 'utf8')));
 
 if (process.env.REPORT_PASSWORD) {
