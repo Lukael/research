@@ -50,7 +50,7 @@ To add multiple reports under one project:
 2. Add each additional report as `projects/<slug>/reports/<report-slug>/index.html`.
 3. Store that report's encrypted payload as `projects/<slug>/reports/<report-slug>/report.enc`.
 4. Use the same unlock/report templates and encryption rules for every report.
-5. Use stable lowercase ASCII report slugs in `YYYY-MM-DD-short-topic` form, for example `2026-06-17-wiener-pseudoclean-baseline`. Use a short revision suffix such as `-r2` only when the same day's report topic needs a distinct rerun. Avoid relative names such as `latest`, `final`, `new`, or `report1`.
+5. Use stable chapter-based report slugs in increasing numeric order: `chapter-001`, `chapter-002`, `chapter-003`, and so on. Keep the number zero-padded to three digits so folder sorting stays readable. Do not rename older chapters after publishing; add the next chapter for new report material. Avoid relative names such as `latest`, `final`, `new`, or `report1`.
 6. Verify the root index groups all discovered reports under one project card.
 
 ## Encrypted Reports
