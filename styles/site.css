@@ -187,6 +187,65 @@ main {
   background: var(--panel-strong);
 }
 
+.report-row-latest {
+  border-color: rgba(86, 156, 214, 0.58);
+  background: var(--panel-strong);
+}
+
+.chapter-drawer {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.chapter-drawer[open] {
+  background: var(--panel);
+}
+
+.chapter-drawer summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 12px;
+  color: var(--accent-strong);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.25;
+  list-style: none;
+}
+
+.chapter-drawer summary::-webkit-details-marker {
+  display: none;
+}
+
+.chapter-drawer summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.chapter-drawer[open] summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.chapter-drawer[open] summary::after {
+  content: "-";
+}
+
+.chapter-list {
+  display: grid;
+  max-height: 280px;
+  gap: 8px;
+  overflow: auto;
+  padding: 10px;
+}
+
 .report-link-label {
   color: var(--accent-strong);
   font-size: 0.75rem;

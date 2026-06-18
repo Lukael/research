@@ -311,6 +311,30 @@
     });
   }
 
+  function createReportRow(report, className) {
+    var row = document.createElement("a");
+    var reportLabel = document.createElement("span");
+    var reportTitle = document.createElement("span");
+    var reportDate = document.createElement("time");
+
+    row.className = className || "report-row";
+    row.href = report.href;
+    reportLabel.className = "report-link-label";
+    reportLabel.textContent = report.reportSlug === "main" ? "Primary" : labelFromReportSlug(report.reportSlug);
+    reportTitle.className = "report-link-title";
+    reportTitle.textContent = report.title;
+    reportDate.className = "report-link-date";
+    reportDate.textContent = formatCommitDate(report.lastCommit && report.lastCommit.date);
+
+    if (report.lastCommit && report.lastCommit.date) {
+      reportDate.dateTime = report.lastCommit.date;
+    }
+
+    row.append(reportLabel, reportTitle, reportDate);
+
+    return row;
+  }
+
   function createCard(project) {
     var article = document.createElement("article");
     var topline = document.createElement("div");
@@ -320,12 +344,14 @@
     var commitMeta = document.createElement("p");
     var commitTime = document.createElement("time");
     var reportList = document.createElement("div");
+    var newestReport = project.reports[0];
+    var olderReports = project.reports.slice(1);
 
     article.className = "report-card";
 
     topline.className = "card-topline";
     statusLabel.className = "status status-complete";
-    statusLabel.textContent = project.reports.length === 1 ? "1 report" : project.reports.length + " reports";
+    statusLabel.textContent = project.reports.length === 1 ? "1 chapter" : project.reports.length + " chapters";
     slugLabel.textContent = project.slug.toUpperCase();
 
     title.textContent = project.title;
@@ -339,28 +365,26 @@
     reportList.className = "report-list";
     reportList.setAttribute("aria-label", project.title + " reports");
 
-    project.reports.forEach(function (report) {
-      var row = document.createElement("a");
-      var reportLabel = document.createElement("span");
-      var reportTitle = document.createElement("span");
-      var reportDate = document.createElement("time");
+    if (newestReport) {
+      reportList.appendChild(createReportRow(newestReport, "report-row report-row-latest"));
+    }
 
-      row.className = "report-row";
-      row.href = report.href;
-      reportLabel.className = "report-link-label";
-      reportLabel.textContent = report.reportSlug === "main" ? "Primary" : labelFromReportSlug(report.reportSlug);
-      reportTitle.className = "report-link-title";
-      reportTitle.textContent = report.title;
-      reportDate.className = "report-link-date";
-      reportDate.textContent = formatCommitDate(report.lastCommit && report.lastCommit.date);
+    if (olderReports.length) {
+      var drawer = document.createElement("details");
+      var drawerSummary = document.createElement("summary");
+      var chapterList = document.createElement("div");
 
-      if (report.lastCommit && report.lastCommit.date) {
-        reportDate.dateTime = report.lastCommit.date;
-      }
+      drawer.className = "chapter-drawer";
+      drawerSummary.textContent = "Older chapters (" + olderReports.length + ")";
+      chapterList.className = "chapter-list";
 
-      row.append(reportLabel, reportTitle, reportDate);
-      reportList.appendChild(row);
-    });
+      olderReports.forEach(function (report) {
+        chapterList.appendChild(createReportRow(report, "report-row"));
+      });
+
+      drawer.append(drawerSummary, chapterList);
+      reportList.appendChild(drawer);
+    }
 
     commitMeta.append("Last commit ", commitTime);
     topline.append(statusLabel, slugLabel);

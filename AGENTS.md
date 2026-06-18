@@ -18,9 +18,9 @@ The main index reads project metadata from each project and report `index.html`:
 - `<title>` or the first `<h1>` for the display title.
 - Last commit date/time from the GitHub commits API for the relevant `report.enc` or report directory.
 
-The main index should be written mostly in English. Project cards should not show thumbnails or report summaries. Keep cards focused on title, slug, report count, last commit date/time, and compact report links. Render commit time in 24-hour format.
+The main index should be written mostly in English. Project cards should not show thumbnails or report summaries. Keep cards focused on title, slug, chapter count, last commit date/time, and compact report links. Render commit time in 24-hour format.
 
-For multi-report projects, keep the root project card grouped by project and list individual reports inside that card. Do not split the same project into many unrelated root-level cards unless the user explicitly wants separate projects.
+For multi-report projects, keep the root project card grouped by project and list individual reports inside that card. Keep the newest chapter immediately visible, and place older chapters in a bounded collapsible list so cards remain scannable as chapter counts grow. Do not split the same project into many unrelated root-level cards unless the user explicitly wants separate projects.
 
 Do not rely on project `assets/` files for report content or thumbnails. Project images should be base64-encoded and embedded into the report HTML before encryption so they are protected inside `report.enc`. Prefer raw base64 fields that the template converts to Blob URLs, rather than public asset references.
 
@@ -53,7 +53,7 @@ To add multiple reports under one project:
 4. Store each report's encrypted payload as `projects/<slug>/reports/<report-slug>/report.enc`.
 5. Use the same unlock/report templates and encryption rules for every report.
 6. Use stable chapter-based report slugs in increasing numeric order: `chapter-01`, `chapter-02`, `chapter-03`, and so on. Keep the number zero-padded to two digits so folder sorting stays readable. Do not rename older chapters after publishing; add the next chapter for new report material. Avoid relative names such as `latest`, `final`, `new`, or `report1`.
-7. Verify the root index groups all discovered reports under one project card.
+7. Verify the root index groups all discovered reports under one project card, shows the newest chapter first, and keeps older chapters inside the collapsed chapter drawer.
 
 ## Encrypted Reports
 
