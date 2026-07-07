@@ -4,6 +4,7 @@
   var branch = "main";
   var grid = document.getElementById("report-grid");
   var status = document.getElementById("report-status");
+  var manifestPromise = null;
 
   if (!grid) {
     return;
@@ -86,9 +87,29 @@
     });
   }
 
+  function readManifest() {
+    if (!manifestPromise) {
+      manifestPromise = fetchText("reports-manifest.json").then(function (text) {
+        return JSON.parse(text);
+      });
+    }
+
+    return manifestPromise;
+  }
+
+  function discoverFromManifest() {
+    return readManifest().then(function (manifest) {
+      return (manifest.projects || []).map(function (project) {
+        return project.slug;
+      });
+    });
+  }
+
   function discoverProjects() {
     return discoverFromGitHub()
-      .catch(discoverFromDirectoryListing)
+      .catch(function () {
+        return discoverFromManifest().catch(discoverFromDirectoryListing);
+      })
       .then(function (slugs) {
         return Array.from(new Set(slugs)).sort();
       });
@@ -176,10 +197,22 @@
       });
   }
 
+  function discoverProjectReportsFromManifest(slug) {
+    return readManifest().then(function (manifest) {
+      var project = (manifest.projects || []).find(function (item) {
+        return item.slug === slug;
+      });
+
+      return project && Array.isArray(project.reports) ? project.reports : [];
+    });
+  }
+
   function discoverProjectReports(slug) {
     return discoverProjectReportsFromGitHub(slug)
       .catch(function () {
-        return discoverProjectReportsFromDirectoryListing(slug);
+        return discoverProjectReportsFromManifest(slug).catch(function () {
+          return discoverProjectReportsFromDirectoryListing(slug);
+        });
       })
       .then(function (reportSlugs) {
         return Array.from(new Set(reportSlugs)).sort();
