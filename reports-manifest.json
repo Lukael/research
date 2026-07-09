@@ -25,6 +25,12 @@
       "reports": [
         "chapter-01"
       ]
+    },
+    {
+      "slug": "gaussian-beam-splatting",
+      "reports": [
+        "chapter-01"
+      ]
     }
   ]
 }
