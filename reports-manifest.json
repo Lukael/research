@@ -29,8 +29,7 @@
     {
       "slug": "gaussian-beam-splatting",
       "reports": [
-        "chapter-01",
-        "chapter-02"
+        "chapter-01"
       ]
     }
   ]
